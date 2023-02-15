@@ -32,7 +32,7 @@ template RLN(depth) {
     signal output root;
     signal output nullifier;
 
-    signal pubkey <-- Poseidon(1)([identity_secret]);
+    signal pubkey <== Poseidon(1)([identity_secret]);
     signal leaf <== Poseidon(2)([pubkey, user_message_limit]);
 
     root <== MerkleTreeInclusionProof(depth)(leaf, identity_path_index, path_elements);
