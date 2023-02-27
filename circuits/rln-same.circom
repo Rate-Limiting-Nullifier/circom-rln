@@ -19,7 +19,7 @@ template RLN(depth) {
     // Private signals
     signal input identity_secret;
     signal input message_id;
-    signal input path_elements[depth][1];
+    signal input path_elements[depth];
     signal input identity_path_index[depth];
 
     // Public signals

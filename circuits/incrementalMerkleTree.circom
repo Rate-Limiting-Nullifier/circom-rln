@@ -6,7 +6,7 @@ include "../node_modules/circomlib/circuits/mux1.circom";
 template MerkleTreeInclusionProof(depth) {
     signal input leaf;
     signal input path_index[depth];
-    signal input path_elements[depth][1];
+    signal input path_elements[depth];
 
     signal output root;
 
@@ -19,8 +19,8 @@ template MerkleTreeInclusionProof(depth) {
 
         mux[i] <== MultiMux1(2)(
             [
-                [levelHashes[i], path_elements[i][0]], 
-                [path_elements[i][0], levelHashes[i]]
+                [levelHashes[i], path_elements[i]], 
+                [path_elements[i], levelHashes[i]]
             ], 
             path_index[i]
         );
