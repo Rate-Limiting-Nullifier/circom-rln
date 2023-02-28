@@ -15,35 +15,35 @@ template IsInInterval(n) {
     out <== let * get;
 }
 
-template RLN(depth) {
+template RLN(DEPTH, LIMIT_BIT_SIZE) {
     // Private signals
-    signal input identity_secret;
-    signal input user_message_limit;
-    signal input message_id;
-    signal input path_elements[depth];
-    signal input identity_path_index[depth];
+    signal input identitySecret;
+    signal input userMessageLimit;
+    signal input messageId;
+    signal input pathElements[DEPTH];
+    signal input identityPathIndex[DEPTH];
 
     // Public signals
     signal input x;
-    signal input external_nullifier;
+    signal input externalNullifier;
 
     // Outputs
     signal output y;
     signal output root;
     signal output nullifier;
 
-    signal pubkey <== Poseidon(1)([identity_secret]);
-    signal leaf <== Poseidon(2)([pubkey, user_message_limit]);
+    signal pubkey <== Poseidon(1)([identitySecret]);
+    signal leaf <== Poseidon(2)([pubkey, userMessageLimit]);
 
-    root <== MerkleTreeInclusionProof(depth)(leaf, identity_path_index, path_elements);
+    root <== MerkleTreeInclusionProof(DEPTH)(leaf, identityPathIndex, pathElements);
 
-    signal checkInterval <== IsInInterval(16)([1, message_id, user_message_limit]);
+    signal checkInterval <== IsInInterval(LIMIT_BIT_SIZE)([1, messageId, userMessageLimit]);
     checkInterval === 1;
 
-    signal a_1 <== Poseidon(3)([identity_secret, external_nullifier, message_id]);
-    y <== identity_secret + a_1 * x;
+    signal a1 <== Poseidon(3)([identitySecret, externalNullifier, messageId]);
+    y <== identitySecret + a1 * x;
 
-    nullifier <== Poseidon(1)([a_1]);
+    nullifier <== Poseidon(1)([a1]);
 }
 
-component main { public [x, external_nullifier] } = RLN(20);
+component main { public [x, externalNullifier] } = RLN(20, 16);
