@@ -1,6 +1,9 @@
 {
+    "scripts": {
+        "build": "bash scripts/build-circuits.sh"
+    },
     "devDependencies": {
         "circomlib": "^2.0.5",
         "snarkjs": "^0.4.22"
-    }   
+    }
 }
