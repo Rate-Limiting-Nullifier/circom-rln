@@ -45,4 +45,4 @@ template RLN(DEPTH, LIMIT_BIT_SIZE) {
     nullifier <== Poseidon(1)([a1]);
 }
 
-component main { public [x, messageLimit, externalNullifier] } = RLN(20, 16);
+component main { public [x, externalNullifier, messageLimit] } = RLN(20, 16);

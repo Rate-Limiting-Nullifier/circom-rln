@@ -32,10 +32,10 @@ template RLN(DEPTH, LIMIT_BIT_SIZE) {
     signal output root;
     signal output nullifier;
 
-    signal pubkey <== Poseidon(1)([identitySecret]);
-    signal leaf <== Poseidon(2)([pubkey, userMessageLimit]);
+    signal identityCommitment <== Poseidon(1)([identitySecret]);
+    signal rateCommitment <== Poseidon(2)([identityCommitment, userMessageLimit]);
 
-    root <== MerkleTreeInclusionProof(DEPTH)(leaf, identityPathIndex, pathElements);
+    root <== MerkleTreeInclusionProof(DEPTH)(rateCommitment, identityPathIndex, pathElements);
 
     signal checkInterval <== IsInInterval(LIMIT_BIT_SIZE)([1, messageId, userMessageLimit]);
     checkInterval === 1;
