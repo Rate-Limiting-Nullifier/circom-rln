@@ -46,7 +46,7 @@ echo -e "\033[36m-----------------\033[0m"
 echo -e "\033[36mCOMPILING CIRCUIT\033[0m"
 echo -e "\033[36m-----------------\033[0m"
 
-echo -e "\033[36m Build Path: $PWD\033[0m"
+echo -e "\033[36mBuild Path: $PWD\033[0m"
 
 circom --version
 circom $circuit_path --r1cs --wasm --sym
@@ -66,11 +66,30 @@ echo -e "Exporting artifacts to zkeyFiles and contracts directory"
 snarkjs zkey export verificationkey setup/rln_final.zkey $zkeypath/verification_key.json
 snarkjs zkey export solidityverifier setup/rln_final.zkey contracts/verifier.sol
 
-cp rln-same_js/rln-same.wasm $zkeypath/rln-same.wasm
+cp rln-$circuit_type\_js/rln-$circuit_type.wasm $zkeypath/rln.wasm
 cp setup/rln_final.zkey $zkeypath/rln_final.zkey
 
-echo -e "RLN_Version: V2" > $zkeypath/circuit.config
-echo -e "RLN_Type: $circuit_type" >> $zkeypath/circuit.config
-echo -e "GitHub_URL: $(git config --get remote.origin.url)"  >> $zkeypath/circuit.config
-echo -e "Git_Commit: $(git describe --always)" >> $zkeypath/circuit.config
-echo -e "Compilation_Time: $(date +%s)" >> $zkeypath/circuit.config
+config_path="$zkeypath/circuit.config.toml"
+echo -e "[Circuit_Version]" > $config_path
+echo -e "RLN_Version = 2" >> $config_path
+echo -e "RLN_Type = \"$circuit_type\"" >> $config_path
+
+echo -e "" >> $config_path
+
+echo -e "[Circuit_Build]" >> $config_path
+echo -e "Circom_Version = \"$(circom --version)\"" >> $config_path
+echo -e "GitHub_URL = \"$(git config --get remote.origin.url)\""  >> $config_path
+echo -e "Git_Commit = \"$(git describe --always)\"" >> $config_path
+echo -e "Compilation_Time = $(date +%s)" >> $config_path
+
+echo -e "" >> $config_path
+echo -e "[Files]" >> $config_path
+echo -e "Wasm = \"rln.wasm\"" >> $config_path
+wasm_sha256=$(sha256sum $zkeypath/rln.wasm | awk '{print $1}')
+echo -e "Wasm_SHA256SUM = \"$wasm_sha256\"" >> $config_path
+echo -e "Zkey = \"rln_final.zkey\"" >> $config_path
+zkey_sha256=$(sha256sum $zkeypath/rln_final.zkey | awk '{print $1}')
+echo -e "Zkey_SHA256SUM = \"$zkey_sha256\"" >> $config_path
+echo -e "Verification_Key = \"verification_key.json\"" >> $config_path
+vkey_sha256=$(sha256sum $zkeypath/verification_key.json | awk '{print $1}')
+echo -e "Verification_Key_SHA256SUM = \"$vkey_sha256\"" >> $config_path
