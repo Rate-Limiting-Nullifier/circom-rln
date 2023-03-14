@@ -69,6 +69,8 @@ snarkjs zkey export solidityverifier setup/rln_final.zkey contracts/verifier.sol
 cp rln-$circuit_type\_js/rln-$circuit_type.wasm $zkeypath/rln.wasm
 cp setup/rln_final.zkey $zkeypath/rln_final.zkey
 
+shasumcmd="shasum -a 256"
+
 config_path="$zkeypath/circuit.config.toml"
 echo -e "[Circuit_Version]" > $config_path
 echo -e "RLN_Version = 2" >> $config_path
@@ -85,11 +87,11 @@ echo -e "Compilation_Time = $(date +%s)" >> $config_path
 echo -e "" >> $config_path
 echo -e "[Files]" >> $config_path
 echo -e "Wasm = \"rln.wasm\"" >> $config_path
-wasm_sha256=$(sha256sum $zkeypath/rln.wasm | awk '{print $1}')
+wasm_sha256=$($shasumcmd $zkeypath/rln.wasm | awk '{print $1}')
 echo -e "Wasm_SHA256SUM = \"$wasm_sha256\"" >> $config_path
 echo -e "Zkey = \"rln_final.zkey\"" >> $config_path
-zkey_sha256=$(sha256sum $zkeypath/rln_final.zkey | awk '{print $1}')
+zkey_sha256=$($shasumcmd $zkeypath/rln_final.zkey | awk '{print $1}')
 echo -e "Zkey_SHA256SUM = \"$zkey_sha256\"" >> $config_path
 echo -e "Verification_Key = \"verification_key.json\"" >> $config_path
-vkey_sha256=$(sha256sum $zkeypath/verification_key.json | awk '{print $1}')
+vkey_sha256=$($shasumcmd $zkeypath/verification_key.json | awk '{print $1}')
 echo -e "Verification_Key_SHA256SUM = \"$vkey_sha256\"" >> $config_path
