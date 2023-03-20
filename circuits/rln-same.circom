@@ -1,9 +1,7 @@
 pragma circom 2.1.0;
 
-include "./incrementalMerkleTree.circom";
 include "./utils.circom";
 include "../node_modules/circomlib/circuits/poseidon.circom";
-include "../node_modules/circomlib/circuits/comparators.circom";
 
 template RLN(DEPTH, LIMIT_BIT_SIZE) {
     // Private signals
