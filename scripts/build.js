@@ -3,11 +3,15 @@ const { mkdirSync, renameSync, rmSync, existsSync } = require('fs')
 const path = require('path')
 const crypto = require('crypto')
 
+const fs = require('fs')
+const https = require('https')
+
 function execPrint(cmd) {
     console.log(execSync(cmd).toString())
 }
 
-function run(name, scheme, tauname) {
+
+async function run(name, scheme, tauname) {
     const root = process.cwd()
     const tauFile = path.join(root, 'tau', tauname)
     const build = path.join(root, 'build')
@@ -16,8 +20,14 @@ function run(name, scheme, tauname) {
     const dest = path.join(root, 'compiled', name)
     if (!existsSync(tauFile)) {
         const tauURL = `https://hermez.s3-eu-west-1.amazonaws.com/${tauname}`
-        console.error(`You must download ${tauURL} and save it to ${tauFile}`)
-        return
+        mkdirSync(path.join(root, 'tau'), {recursive: true})
+        console.log(`Downloading ${tauURL} and saving it to ${tauFile}`)
+        try {
+            await downloadFile(tauURL, tauFile)
+        } catch (e) {
+            console.error(e)
+            process.exit()
+        }
     }
     rmSync(build, {recursive: true, force: true})
 
@@ -57,7 +67,40 @@ function run(name, scheme, tauname) {
     process.chdir(root)
     rmSync(build, {recursive: true})
 }
+async function build() {
+    await run('rln-same', 'groth16', "powersOfTau28_hez_final_17.ptau")
+    await run('rln-generic', 'plonk', "powersOfTau28_hez_final_17.ptau")
+    await run('rln-generic', 'groth16', "powersOfTau28_hez_final_17.ptau")
+    process.exit()
+}
 
-// run('rln-same', 'groth16', "powersOfTau28_hez_final_17.ptau")
-// run('rln-generic', 'plonk', "powersOfTau28_hez_final_17.ptau")
-run('rln-generic', 'groth16', "powersOfTau28_hez_final_17.ptau")
+function download (url, dest, cb, errcb) {
+    const file = fs.createWriteStream(dest)
+
+    const request = https.get(url, (response) => {
+        // check if response is success
+        if (response.statusCode !== 200) {
+            return errcb('Response status was ' + response.statusCode)
+        }
+
+        response.pipe(file)
+    })
+
+    // close() is async, call cb after close completes
+    file.on('finish', () => file.close(cb))
+
+    // check for request error too
+    request.on('error', (err) => {
+        fs.unlink(dest, () => errcb(err.message)) // delete the (partial) file and then return the error
+    })
+
+    file.on('error', (err) => { // Handle errors
+        fs.unlink(dest, () => errcb(err.message)) // delete the (partial) file and then return the error
+    })
+}
+
+async function downloadFile(url, file) {
+    return new Promise((resolve, reject) => {download(url, file, resolve, reject)})
+}
+
+build()
