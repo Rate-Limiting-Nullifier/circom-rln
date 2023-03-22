@@ -1,6 +1,6 @@
 {
     "scripts": {
-       "build": "node scripts/build.js",
+       "build": "node scripts/build.js"
     },
     "devDependencies": {
         "circomlib": "^2.0.5",
