@@ -16,16 +16,16 @@ We have generally advised using 1 message/signal per epoch and adjusting the epo
 
 Before we move on, this is a quick refresher on the inputs/outputs of the RLN v1 circuits and their general purpose. If you want more detail on how RLN circuits work, please [read this](https://rate-limiting-nullifier.github.io/rln-docs/protocol_spec.html), which goes into more detail.
 
-Inputs:
+**Inputs**:
 
-* [public] `external_nullifier` (h(`rln_identifier`, `epoch`)) - *This identifies a unique epoch per app*
-    * `rln_identifier` is some unique identifier for an app
-    * `epoch` is some unique identifier for an event or time
-* [public] Message (signal)
-* [private] Secret Key `h(trapdoor, nullifier)`
-    * This is to prove you are in some merkle tree, and to make the `y_share`, and `internal_nullifier` unique to an `id_commitment`
+Public: 
+* `external_nullifier` = h(`rln_identifier`, `epoch`) - *This identifies a unique epoch per app*, where `rln_identifier` is some unique identifier for an app and `epoch` is some unique identifier for an event or time;
+* Message (signal).
 
-Outputs:
+Private: 
+* Secret Key `h(trapdoor, nullifier)` - This is to prove you are in some merkle tree, and to make the `y_share`, and `internal_nullifier` unique to an `id_commitment`.
+
+**Outputs**:
 
 * `Internal_Nullifier`
     * Used to identify a unique user during a specific epoch (external_nullifier)
