@@ -19,8 +19,8 @@ Before we move on, this is a quick refresher on the inputs/outputs of the RLN v1
 **Inputs**:
 
 Public: 
-* `external_nullifier` = h(`rln_identifier`, `epoch`) - *This identifies a unique epoch per app*, where `rln_identifier` is some unique identifier for an app and `epoch` is some unique identifier for an event or time;
-* Message (signal).
+* `external_nullifier` = `h(rln_identifier, epoch)` - *This identifies a unique epoch per app*, where `rln_identifier` is some unique identifier for an app and `epoch` is some unique identifier for an event or time;
+* `x` = `h(message)`.
 
 Private: 
 * Secret Key `h(trapdoor, nullifier)` - This is to prove you are in some merkle tree, and to make the `y_share`, and `internal_nullifier` unique to an `id_commitment`.
