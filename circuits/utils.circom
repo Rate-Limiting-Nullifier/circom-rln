@@ -37,8 +37,8 @@ template IsInInterval(n) {
 
     signal output out;
 
-    signal let <== LessEqThan(n)([in[1], in[2]]);
-    signal get <== GreaterEqThan(n)([in[1], in[0]]);
+    signal firstCmp <== LessEqThan(n)([in[0], in[1]]);
+    signal secondCmp <== LessEqThan(n)([in[1], in[2]]);
 
-    out <== let * get;
+    out <== firstCmp * secondCmp;
 }
