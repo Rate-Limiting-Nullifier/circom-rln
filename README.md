@@ -1,6 +1,6 @@
 <h1 align=center>Rate-Limit-Nullifier</h1>
 
-*this text is from @AtHeartEngineer [post](https://zkresear.ch/t/rate-limit-nullifier-v2-circuits/102) on [zkResear.ch](https://zkresear.ch)*
+*This text is from @AtHeartEngineer [post](https://zkresear.ch/t/rate-limit-nullifier-v2-circuits/102) on [zkResear.ch](https://zkresear.ch)*
 
 The main goal of RLN v2 circuits is to make it possible to have a custom amount of messages (signals) per epoch without using a separate circuit or high-degree polynomials for [Shamir's Secret Sharing](https://rate-limiting-nullifier.github.io/rln-docs/sss.html).
 

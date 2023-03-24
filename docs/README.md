@@ -1,7 +1,9 @@
 # Formal description of the circuits
 
+*[RFC for RLN-V2](https://rfc.vac.dev/spec/58/)*
+
 - [Utils](#utils-templates)
-    - [MerkleTreeInclusionProof](#merkletreeinclusionproofdepth)
+    - [MerkleTreeInclusionProof](#merkletreeinclusionproof)
     - [IsInInterval](#isininterval)
 - [RLN-diff](#rln-diff-templates)
 - [RLN-same](#rln-same-templates)
@@ -60,6 +62,71 @@ Checked that `in[0] <= in[1] <= in[2]`. That's done by combining two `LessEqThan
 
 ## RLN-same
 
+[rln-same.circom](../circuits/rln-same.circom) is a template that's used for [RLN-same protocol](https://rfc.vac.dev/spec/58/#rln-same-flow). 
 
+**Parameters**:
+* `DEPTH` - depth of a Merkle Tree. Described [here](#merkletreeinclusionproof);
+* `LIMIT_BIT_SIZE` - maximum bit size of numbers that are used in range check. Described [here](#isininterval).
+
+**Private inputs**:
+* `identitySecret` - randomly generated number in `F_p`, used as private key;
+* `messageId` - id of the message;
+* `pathElements[DEPTH]` - pathElements[DEPTH], described [here](#merkletreeinclusionproof);
+* `identityPathIndex[DEPTH]` - pathIndex[DEPTH], described [here](#merkletreeinclusionproof).
+
+**Public inputs**:
+* `x` - `Hash(signal)`, where `signal` is for example message, that was sent by user;
+* `externalNullifier` - `Hash(epoch, rln_identifier)`;
+* `messageLimit` - message limit of an RLN app.
+
+**Outputs**:
+* `y` - calculated first-degree linear polynomial (y = kx + b);
+* `root` - root of the Merkle Tree;
+* `nullifier` - internal nullifier/pseudonym of the user in anonyomus environment.
+
+**Logic/Constraints**:
+1. Merkle tree membership check:
+    * `identityCommitment` = `Poseidon(identitySecret)` calculation;
+    * [Merkle tree inclusion check](#merkletreeinclusionproof) for the `identityCommitment`.
+2. Range check:
+    * [Range check](#isininterval) that `1 <= messageId <= messageLimit`.
+3. Polynomial share calculation:
+    * `a1` = `Poseidon(identitySecret, externalNullifier, messageId)`;
+    * `y` = `identitySecret + a1 * x`.
+4. Output of calculated `root`, `share` and `nullifier` = `Poseidon(a_1)` values.
 
 ## RLN-diff
+
+[rln-diff.circom](../circuits/rln-diff.circom) is a template that's used for [RLN-diff protocol](https://rfc.vac.dev/spec/58/#rln-diff-flow). 
+
+**Parameters**:
+* `DEPTH` - depth of a Merkle Tree. Described [here](#merkletreeinclusionproof);
+* `LIMIT_BIT_SIZE` - maximum bit size of numbers that are used in range check. Described [here](#isininterval).
+
+**Private inputs**:
+* `identitySecret` - randomly generated number in `F_p`, used as a private key;
+* `userMessageLimit` - message limit of the user;
+* `messageId` - id of the message;
+* `pathElements[DEPTH]` - pathElements[DEPTH], described [here](#merkletreeinclusionproof);
+* `identityPathIndex[DEPTH]` - pathIndex[DEPTH], described [here](#merkletreeinclusionproof).
+
+**Public inputs**:
+* `x` - `Hash(signal)`, where `signal` is for example message, that was sent by user;
+* `externalNullifier` - `Hash(epoch, rln_identifier)`.
+
+**Outputs**:
+* `y` - calculated first-degree linear polynomial (y = kx + b);
+* `root` - root of the Merkle Tree;
+* `nullifier` - internal nullifier/pseudonym of the user in anonyomus environment.
+
+**Logic/Constraints**:
+1. Merkle tree membership check:
+    * `identityCommitment` = `Poseidon(identitySecret, )` calculation;
+    * `rateCommitment` = `Poseidon(identityCommitment, userMessageLimit)` calculation;
+    * [Merkle tree inclusion check](#merkletreeinclusionproof) for the `rateCommitment`.
+2. Range check:
+    * [Range check](#isininterval) that `1 <= messageId <= userMessageLimit`.
+3. Polynomial share calculation:
+    * `a1` = `Poseidon(identitySecret, externalNullifier, messageId)`;
+    * `y` = `identitySecret + a1 * x`.
+4. Output of calculated `root`, `share` and `nullifier` = `Poseidon(a_1)` values.
