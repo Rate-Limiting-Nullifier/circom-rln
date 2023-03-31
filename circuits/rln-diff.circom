@@ -1,11 +1,12 @@
 pragma circom 2.1.0;
 
-include "../utils.circom";
-include "../../node_modules/circomlib/circuits/poseidon.circom";
+include "./utils.circom";
+include "../node_modules/circomlib/circuits/poseidon.circom";
 
 template RLN(DEPTH, LIMIT_BIT_SIZE) {
     // Private signals
     signal input identitySecret;
+    signal input userMessageLimit;
     signal input messageId;
     signal input pathElements[DEPTH];
     signal input identityPathIndex[DEPTH];
@@ -13,7 +14,6 @@ template RLN(DEPTH, LIMIT_BIT_SIZE) {
     // Public signals
     signal input x;
     signal input externalNullifier;
-    signal input messageLimit;
 
     // Outputs
     signal output y;
@@ -21,10 +21,11 @@ template RLN(DEPTH, LIMIT_BIT_SIZE) {
     signal output nullifier;
 
     signal identityCommitment <== Poseidon(1)([identitySecret]);
+    signal rateCommitment <== Poseidon(2)([identityCommitment, userMessageLimit]);
 
-    root <== MerkleTreeInclusionProof(DEPTH)(identityCommitment, identityPathIndex, pathElements);
+    root <== MerkleTreeInclusionProof(DEPTH)(rateCommitment, identityPathIndex, pathElements);
 
-    signal checkInterval <== IsInInterval(LIMIT_BIT_SIZE)([1, messageId, messageLimit]);
+    signal checkInterval <== IsInInterval(LIMIT_BIT_SIZE)([1, messageId, userMessageLimit]);
     checkInterval === 1;
 
     signal a1 <== Poseidon(3)([identitySecret, externalNullifier, messageId]);
@@ -33,4 +34,4 @@ template RLN(DEPTH, LIMIT_BIT_SIZE) {
     nullifier <== Poseidon(1)([a1]);
 }
 
-component main { public [x, externalNullifier, messageLimit] } = RLN(20, 16);
+component main { public [x, externalNullifier] } = RLN(20, 16);

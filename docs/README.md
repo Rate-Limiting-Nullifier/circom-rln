@@ -5,8 +5,9 @@
 - [Utils](#utils-templates)
     - [MerkleTreeInclusionProof](#merkletreeinclusionproof)
     - [IsInInterval](#isininterval)
-- [RLN-diff](#rln-diff-templates)
 - [RLN-same](#rln-same-templates)
+- [RLN-diff](#rln-diff-templates)
+- [Withdrawal](#withdrawal)
 
 ___
 
@@ -60,9 +61,11 @@ Basically, it says how to calculate Poseidon hash, e.g. for two inputs `input1`,
 Checked that `in[0] <= in[1] <= in[2]`. That's done by combining two `LessEqThan` checks. 
 `out` value is calculated as a multiplication of two `LessEqThan` outputs.
 
+___
+
 ## RLN-same
 
-[rln-same.circom](../circuits/rln-same.circom) is a template that's used for [RLN-same protocol](https://rfc.vac.dev/spec/58/#rln-same-flow). 
+[rln-same.circom](../circuits/rln-same/rln-same.circom) is a template that's used for [RLN-same protocol](https://rfc.vac.dev/spec/58/#rln-same-flow). 
 
 **Parameters**:
 * `DEPTH` - depth of a Merkle Tree. Described [here](#merkletreeinclusionproof);
@@ -95,9 +98,11 @@ Checked that `in[0] <= in[1] <= in[2]`. That's done by combining two `LessEqThan
     * `y` = `identitySecret + a1 * x`.
 4. Output of calculated `root`, `share` and `nullifier` = `Poseidon(a_1)` values.
 
+___
+
 ## RLN-diff
 
-[rln-diff.circom](../circuits/rln-diff.circom) is a template that's used for [RLN-diff protocol](https://rfc.vac.dev/spec/58/#rln-diff-flow). 
+[rln-diff.circom](../circuits/rln-diff/rln-diff.circom) is a template that's used for [RLN-diff protocol](https://rfc.vac.dev/spec/58/#rln-diff-flow). 
 
 **Parameters**:
 * `DEPTH` - depth of a Merkle Tree. Described [here](#merkletreeinclusionproof);
@@ -130,3 +135,18 @@ Checked that `in[0] <= in[1] <= in[2]`. That's done by combining two `LessEqThan
     * `a1` = `Poseidon(identitySecret, externalNullifier, messageId)`;
     * `y` = `identitySecret + a1 * x`.
 4. Output of calculated `root`, `share` and `nullifier` = `Poseidon(a_1)` values.
+
+___
+
+### Withdrawal
+
+[withdraw.circom](../circuits/withdraw.circom) is a template that's used for the withdrawal/slashing and is needed to prevent front run while withdrawing the stake from the smart-contract/registry. 
+
+**Private inputs**:
+* `identitySecret` - randomly generated number in `F_p`, used as private key.
+
+**Public inputs**:
+* `addressHash` - `F_p` scalar field element. `addressHash` = `Hash(address)`, where `address` is ETH address that'll receive stake. 
+
+**Outputs**:
+* `identityCommitment` = `Poseidon(identitySecret)`.
