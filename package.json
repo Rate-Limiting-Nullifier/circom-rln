@@ -1,9 +1,20 @@
 {
     "scripts": {
-        "build": "bash scripts/build-circuits.sh"
+        "build": "bash scripts/build-circuits.sh same && bash scripts/build-circuits.sh diff && bash scripts/build-circuits.sh withdraw",
+        "test": "ts-mocha --exit test/**/*.test.ts"
+    },
+    "dependencies": {
+        "circomlib": "^2.0.5"
     },
     "devDependencies": {
-        "circomlib": "^2.0.5",
-        "snarkjs": "^0.4.22"
+        "@types/mocha": "^10.0.1",
+        "@types/node": "^18.14.6",
+        "@zk-kit/incremental-merkle-tree": "^1.0.0",
+        "circom_tester": "^0.0.19",
+        "mocha": "^10.2.0",
+        "poseidon-lite": "^0.0.2",
+        "snarkjs": "^0.6.7",
+        "ts-mocha": "^10.0.0",
+        "typescript": "^4.9.5"
     }
 }

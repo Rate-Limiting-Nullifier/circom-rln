@@ -2,10 +2,8 @@
 set -e
 
 cd "$(dirname "$0")"
-zkeypath="../zkeyFiles"
 mkdir -p ../build/contracts
 mkdir -p ../build/setup
-mkdir -p $zkeypath
 
 # Build context
 cd ../build
@@ -19,21 +17,26 @@ else
     wget https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_14.ptau
 fi
 
+circuit_dir="../circuits"
 circuit_path=""
 circuit_type=""
+zkeydir="../zkeyFiles"
+
 if [ "$1" = "diff" ]; then
     echo -e "\033[32mUsing Diff circuit\033[0m"
-    circuit_type="diff"
-    circuit_path="../circuits/rln-diff.circom"
+    circuit_name="rln-diff"
 elif [ "$1" = "same" ]; then
     echo -e "\033[32mUsing Same circuit\033[0m"
-    circuit_type="same"
-    circuit_path="../circuits/rln-same.circom"
+    circuit_name="rln-same"
+elif [ "$1" = "withdraw" ]; then
+    echo -e "\033[32mUsing Withdraw circuit\033[0m"
+    circuit_name="withdraw"
 else
-    circuit_type="same"
-    circuit_path="../circuits/rln-same.circom"
     echo -e "\033[33mUnrecognized argument, using 'same' as default.\033[0m"
+    circuit_name="rln-same"
 fi
+circuit_path="$circuit_dir/$circuit_name.circom"
+zkeypath="$zkeydir/v2/$circuit_name"
 
 if ! [ -x "$(command -v circom)" ]; then
     echo -e '\033[31mError: circom is not installed.\033[0m' >&2
@@ -51,11 +54,11 @@ echo -e "\033[36mBuild Path: $PWD\033[0m"
 circom --version
 circom $circuit_path --r1cs --wasm --sym
 
-snarkjs r1cs export json rln-same.r1cs rln-same.r1cs.json
+snarkjs r1cs export json $circuit_name.r1cs $circuit_name.r1cs.json
 
 echo -e "\033[36mRunning groth16 trusted setup\033[0m"
 
-snarkjs groth16 setup rln-same.r1cs powersOfTau28_hez_final_14.ptau setup/rln_0000.zkey
+snarkjs groth16 setup $circuit_name.r1cs powersOfTau28_hez_final_14.ptau setup/rln_0000.zkey
 
 snarkjs zkey contribute setup/rln_0000.zkey setup/rln_0001.zkey --name="First contribution" -v -e="Random entropy"
 snarkjs zkey contribute setup/rln_0001.zkey setup/rln_0002.zkey --name="Second contribution" -v -e="Another random entropy"
@@ -63,10 +66,11 @@ snarkjs zkey beacon setup/rln_0002.zkey setup/rln_final.zkey 0102030405060708090
 
 echo -e "Exporting artifacts to zkeyFiles and contracts directory"
 
+mkdir -p $zkeypath
 snarkjs zkey export verificationkey setup/rln_final.zkey $zkeypath/verification_key.json
 snarkjs zkey export solidityverifier setup/rln_final.zkey contracts/verifier.sol
 
-cp rln-$circuit_type\_js/rln-$circuit_type.wasm $zkeypath/rln.wasm
+cp $circuit_name\_js/$circuit_name.wasm $zkeypath/rln.wasm
 cp setup/rln_final.zkey $zkeypath/rln_final.zkey
 
 shasumcmd="shasum -a 256"
@@ -74,7 +78,7 @@ shasumcmd="shasum -a 256"
 config_path="$zkeypath/circuit.config.toml"
 echo -e "[Circuit_Version]" > $config_path
 echo -e "RLN_Version = 2" >> $config_path
-echo -e "RLN_Type = \"$circuit_type\"" >> $config_path
+echo -e "RLN_Type = \"$circuit_name\"" >> $config_path
 
 echo -e "" >> $config_path
 
