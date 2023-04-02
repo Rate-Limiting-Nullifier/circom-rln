@@ -1,6 +1,13 @@
 <h1 align=center>Rate-Limit-Nullifier</h1>
+<p align="center">
+    <img src="https://github.com/Rate-Limiting-Nullifier/rln-circuits-v2/workflows/Test/badge.svg" width="110">
+</p>
 
-*This text is from @AtHeartEngineer [post](https://zkresear.ch/t/rate-limit-nullifier-v2-circuits/102) on [zkResear.ch](https://zkresear.ch)*
+<p align="center">Read formal description <a href="https://github.com/Rate-Limiting-Nullifier/rln-circuits-v2/blob/main/docs/README.md">here</a></p>
+
+<p align="center">Read RFC <a href="https://rfc.vac.dev/spec/58/">here</a></p>
+
+## TL;DR
 
 The main goal of RLN v2 circuits is to make it possible to have a custom amount of messages (signals) per epoch without using a separate circuit or high-degree polynomials for [Shamir's Secret Sharing](https://rate-limiting-nullifier.github.io/rln-docs/sss.html).
 
@@ -91,3 +98,6 @@ For example, the possible limit is 1000 (`n` = 1000), and each message costs 0.0
 So, when you join app you attach the amount of stake you want and also send the `id_commitment` and `rate_commitment = Hash(id_commitment, userMessageLimit)` will be calculated on-chain based on your stake.
 
 Signaling will use other circuit, where your `limit` is private input, and the counter `k` is checked that it's in the range from 1 to `userMessageLimit`.
+
+---
+*This text is from @AtHeartEngineer [post](https://zkresear.ch/t/rate-limit-nullifier-v2-circuits/102) on [zkResear.ch](https://zkresear.ch)*.
