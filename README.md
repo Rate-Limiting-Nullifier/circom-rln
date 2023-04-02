@@ -1,4 +1,4 @@
-<h1 align=center>Rate-Limit-Nullifier</h1>
+<h1 align=center>Rate-Limit Nullifier circuits in Circom</h1>
 <p align="center">
     <img src="https://github.com/Rate-Limiting-Nullifier/rln-circuits-v2/workflows/Test/badge.svg" width="110">
 </p>
