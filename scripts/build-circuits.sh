@@ -2,10 +2,8 @@
 set -e
 
 cd "$(dirname "$0")"
-zkeypath="../zkeyFiles"
 mkdir -p ../build/contracts
 mkdir -p ../build/setup
-mkdir -p $zkeypath
 
 # Build context
 cd ../build
@@ -21,17 +19,21 @@ fi
 
 circuit_path=""
 circuit_type=""
+zkeypath=""
 if [ "$1" = "diff" ]; then
     echo -e "\033[32mUsing Diff circuit\033[0m"
     circuit_type="diff"
     circuit_path="../circuits/rln-diff.circom"
+    zkeypath="../zkeyFiles/rln-v2-diff"
 elif [ "$1" = "same" ]; then
     echo -e "\033[32mUsing Same circuit\033[0m"
     circuit_type="same"
     circuit_path="../circuits/rln-same.circom"
+    zkeypath="../zkeyFiles/rln-v2-same"
 else
     circuit_type="same"
     circuit_path="../circuits/rln-same.circom"
+    zkeypath="../zkeyFiles/rln-v2-same"
     echo -e "\033[33mUnrecognized argument, using 'same' as default.\033[0m"
 fi
 
@@ -63,6 +65,7 @@ snarkjs zkey beacon setup/rln_0002.zkey setup/rln_final.zkey 0102030405060708090
 
 echo -e "Exporting artifacts to zkeyFiles and contracts directory"
 
+mkdir -p $zkeypath
 snarkjs zkey export verificationkey setup/rln_final.zkey $zkeypath/verification_key.json
 snarkjs zkey export solidityverifier setup/rln_final.zkey contracts/verifier.sol
 
