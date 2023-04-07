@@ -26,7 +26,7 @@ async function run(name, scheme, tauname) {
             await downloadFile(tauURL, tauFile)
         } catch (e) {
             console.error(e)
-            process.exit()
+            process.exit(1)
         }
     }
     rmSync(build, {recursive: true, force: true})
