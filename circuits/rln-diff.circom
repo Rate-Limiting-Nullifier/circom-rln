@@ -25,8 +25,12 @@ template RLN(DEPTH, LIMIT_BIT_SIZE) {
 
     root <== MerkleTreeInclusionProof(DEPTH)(rateCommitment, identityPathIndex, pathElements);
 
-    signal checkInterval <== IsInInterval(LIMIT_BIT_SIZE)([1, messageId, userMessageLimit]);
-    checkInterval === 1;
+    // Check that messageId's big size is indeed LIMIT_BIT_SIZE
+    signal bitCheck[LIMIT_BIT_SIZE] <== Num2Bits(LIMIT_BIT_SIZE)(messageId);
+    
+    // Range check that message id belongs in [0, userMessageLimit)
+    signal rangeCheck <== LessThan(LIMIT_BIT_SIZE)([messageId, userMessageLimit]);
+    rangeCheck === 1;
 
     signal a1 <== Poseidon(3)([identitySecret, externalNullifier, messageId]);
     y <== identitySecret + a1 * x;
