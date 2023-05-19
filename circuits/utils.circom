@@ -31,14 +31,3 @@ template MerkleTreeInclusionProof(DEPTH) {
 
     root <== levelHashes[DEPTH];
 }
-
-template IsInInterval(LIMIT_BIT_SIZE) {
-    signal input in[3];
-
-    signal output out;
-
-    signal firstCmp <== LessEqThan(LIMIT_BIT_SIZE)([in[0], in[1]]);
-    signal secondCmp <== LessEqThan(LIMIT_BIT_SIZE)([in[1], in[2]]);
-
-    out <== firstCmp * secondCmp;
-}
