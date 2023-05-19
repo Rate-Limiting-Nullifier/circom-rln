@@ -4,9 +4,9 @@ include "../node_modules/circomlib/circuits/poseidon.circom";
 
 template Withdraw() {
     signal input identitySecret;
-    signal input addressHash;
+    signal input address;
 
     signal output identityCommitment <== Poseidon(1)([identitySecret]);
 }
 
-component main { public [addressHash] } = Withdraw();
+component main { public [address] } = Withdraw();

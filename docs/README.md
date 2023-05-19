@@ -146,7 +146,7 @@ ___
 * `identitySecret` - randomly generated number in `F_p`, used as private key.
 
 **Public inputs**:
-* `addressHash` - `F_p` scalar field element. `addressHash` = `Hash(address)`, where `address` is ETH address that'll receive stake. 
+* `address` - `F_p` scalar field element. ETH address that'll receive stake. 
 
 **Outputs**:
 * `identityCommitment` = `Poseidon(identitySecret)`.
