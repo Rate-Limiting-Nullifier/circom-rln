@@ -10,7 +10,7 @@ const circuitPath = path.join(__dirname, "..", "circuits", "rln-same.circom");
 type CircuitT = any;
 
 
-describe("Test rln-diff.circom", function () {
+describe("Test rln-same.circom", function () {
     let circuit: CircuitT;
 
     this.timeout(30000);
