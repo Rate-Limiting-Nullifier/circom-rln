@@ -26,10 +26,10 @@ template RLN(DEPTH, LIMIT_BIT_SIZE) {
 
     root <== MerkleTreeInclusionProof(DEPTH)(identityCommitment, identityPathIndex, pathElements);
 
-    // Check that messageId's big size is indeed LIMIT_BIT_SIZE
+    // Check that messageId's big size is indeed of LIMIT_BIT_SIZE
     signal bitCheck[LIMIT_BIT_SIZE] <== Num2Bits(LIMIT_BIT_SIZE)(messageId);
     
-    // Range check that message id belongs in [0, messageLimit)
+    // Range check that messageId belongs in [0, messageLimit)
     signal rangeCheck <== LessThan(LIMIT_BIT_SIZE)([messageId, messageLimit]);
     rangeCheck === 1;
 

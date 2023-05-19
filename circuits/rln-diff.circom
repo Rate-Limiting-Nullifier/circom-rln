@@ -1,6 +1,8 @@
 pragma circom 2.1.0;
 
 include "./utils.circom";
+include "../node_modules/circomlib/circuits/comparators.circom";
+include "../node_modules/circomlib/circuits/bitify.circom";
 include "../node_modules/circomlib/circuits/poseidon.circom";
 
 template RLN(DEPTH, LIMIT_BIT_SIZE) {
@@ -25,10 +27,10 @@ template RLN(DEPTH, LIMIT_BIT_SIZE) {
 
     root <== MerkleTreeInclusionProof(DEPTH)(rateCommitment, identityPathIndex, pathElements);
 
-    // Check that messageId's big size is indeed LIMIT_BIT_SIZE
+    // Check that messageId's big size is indeed of LIMIT_BIT_SIZE
     signal bitCheck[LIMIT_BIT_SIZE] <== Num2Bits(LIMIT_BIT_SIZE)(messageId);
-    
-    // Range check that message id belongs in [0, userMessageLimit)
+
+    // Range check that messageId belongs in [0, userMessageLimit)
     signal rangeCheck <== LessThan(LIMIT_BIT_SIZE)([messageId, userMessageLimit]);
     rangeCheck === 1;
 
