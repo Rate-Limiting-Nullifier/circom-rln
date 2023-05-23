@@ -1,8 +1,6 @@
 pragma circom 2.1.0;
 
 include "./utils.circom";
-include "../node_modules/circomlib/circuits/comparators.circom";
-include "../node_modules/circomlib/circuits/bitify.circom";
 include "../node_modules/circomlib/circuits/poseidon.circom";
 
 template RLN(DEPTH, LIMIT_BIT_SIZE) {
@@ -24,18 +22,18 @@ template RLN(DEPTH, LIMIT_BIT_SIZE) {
 
     signal identityCommitment <== Poseidon(1)([identitySecret]);
 
+    // Membership check
     root <== MerkleTreeInclusionProof(DEPTH)(identityCommitment, identityPathIndex, pathElements);
 
-    // Check that messageId's big size is indeed of LIMIT_BIT_SIZE
-    signal bitCheck[LIMIT_BIT_SIZE] <== Num2Bits(LIMIT_BIT_SIZE)(messageId);
-    
-    // Range check that messageId belongs in [0, messageLimit)
-    signal rangeCheck <== LessThan(LIMIT_BIT_SIZE)([messageId, messageLimit]);
+    // messageId range check
+    signal rangeCheck <== RangeCheck(LIMIT_BIT_SIZE)(messageId, messageLimit);
     rangeCheck === 1;
 
+    // SSS share calculations
     signal a1 <== Poseidon(3)([identitySecret, externalNullifier, messageId]);
     y <== identitySecret + a1 * x;
 
+    // nullifier calculation
     nullifier <== Poseidon(1)([a1]);
 }
 
