@@ -23,9 +23,9 @@ describe("Test withdraw.circom", function () {
         // Private inputs
         const identitySecret = genFieldElement();
         // Public inputs
-        const addressHash = genFieldElement();
+        const address = genFieldElement();
         // Test: should generate proof if inputs are correct
-        const witness: bigint[] = await circuit.calculateWitness({identitySecret, addressHash}, true);
+        const witness: bigint[] = await circuit.calculateWitness({identitySecret, address}, true);
         await circuit.checkConstraints(witness);
         const expectedIdentityCommitment = poseidon([identitySecret])
         const outputIdentityCommitment = await getSignal(circuit, witness, "identityCommitment")

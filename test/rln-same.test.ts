@@ -67,8 +67,8 @@ describe("Test rln-same.circom", function () {
         const identitySecretCommitment = poseidon([identitySecret]);
         const merkleProof = genMerkleProof([identitySecretCommitment], 0)
         const messageLimit = BigInt(10)
-        // valid message id is in the range [1, messageLimit]
-        const invalidMessageIds = [BigInt(0), messageLimit + BigInt(1)]
+        // valid message id is in the range [0, messageLimit-1]
+        const invalidMessageIds = [messageLimit, messageLimit + BigInt(1)]
 
         for (const invalidMessageId of invalidMessageIds) {
             const inputs = {
