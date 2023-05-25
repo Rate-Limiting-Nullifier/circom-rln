@@ -1,6 +1,6 @@
 {
     "scripts": {
-        "build": "bash scripts/build-circuits.sh same && bash scripts/build-circuits.sh diff && bash scripts/build-circuits.sh withdraw",
+        "build": "./scripts/build-circuits.sh rln && ./scripts/build-circuits.sh withdraw",
         "test": "ts-mocha --exit test/**/*.test.ts"
     },
     "dependencies": {
