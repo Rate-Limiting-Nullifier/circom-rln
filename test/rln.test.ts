@@ -2,15 +2,23 @@ import * as path from "path";
 import assert from "assert";
 const tester = require("circom_tester").wasm;
 import poseidon from "poseidon-lite";
-import { calculateOutput, genFieldElement, genMerkleProof, getSignal }  from "./utils";
+import { calculateOutput, genFieldElement, genMerkleProof, getSignal } from "./utils"
 
-const circuitPath = path.join(__dirname, "..", "circuits", "rln-same.circom");
+
+const circuitPath = path.join(__dirname, "..", "circuits", "rln.circom");
 
 // ffjavascript has no types so leave circuit with untyped
 type CircuitT = any;
 
 
-describe("Test rln-same.circom", function () {
+function calculateLeaf(identitySecret: bigint, userMessageLimit: bigint) {
+    const identityCommitment = poseidon([identitySecret])
+    const rateCommitment = poseidon([identityCommitment, userMessageLimit])
+    return rateCommitment
+}
+
+
+describe("Test rln.circom", function () {
     let circuit: CircuitT;
 
     this.timeout(30000);
@@ -25,22 +33,22 @@ describe("Test rln-same.circom", function () {
         const externalNullifier = genFieldElement();
         // Private inputs
         const identitySecret = genFieldElement();
-        const identitySecretCommitment = poseidon([identitySecret]);
-        const merkleProof = genMerkleProof([identitySecretCommitment], 0)
+        const userMessageLimit = BigInt(10)
+        const leaf = calculateLeaf(identitySecret, userMessageLimit)
+        const merkleProof = genMerkleProof([leaf], 0)
         const merkleRoot = merkleProof.root
-        const messageLimit = BigInt(10)
-        const messageId = BigInt(1)
+        const messageId = userMessageLimit - BigInt(1)
 
         const inputs = {
             // Private inputs
             identitySecret,
+            userMessageLimit,
             messageId,
             pathElements: merkleProof.siblings,
             identityPathIndex: merkleProof.pathIndices,
             // Public inputs
             x,
             externalNullifier,
-            messageLimit,
         }
 
         // Test: should generate proof if inputs are correct
@@ -58,7 +66,7 @@ describe("Test rln-same.circom", function () {
         assert.equal(outputNullifier, nullifier)
     });
 
-    it("should fail to generate witness if messageId is not in range [1, messageLimit]", async function () {
+    it("should fail to generate witness if messageId is not in range [0, userMessageLimit-1]", async function () {
         // Public inputs
         const x = genFieldElement();
         const externalNullifier = genFieldElement();
@@ -66,21 +74,21 @@ describe("Test rln-same.circom", function () {
         const identitySecret = genFieldElement();
         const identitySecretCommitment = poseidon([identitySecret]);
         const merkleProof = genMerkleProof([identitySecretCommitment], 0)
-        const messageLimit = BigInt(10)
-        // valid message id is in the range [0, messageLimit-1]
-        const invalidMessageIds = [messageLimit, messageLimit + BigInt(1)]
+        const userMessageLimit = BigInt(10)
+        // valid message id is in the range [0, userMessageLimit-1]
+        const invalidMessageIds = [userMessageLimit, userMessageLimit + BigInt(1)]
 
         for (const invalidMessageId of invalidMessageIds) {
             const inputs = {
                 // Private inputs
                 identitySecret,
+                userMessageLimit,
                 messageId: invalidMessageId,
                 pathElements: merkleProof.siblings,
                 identityPathIndex: merkleProof.pathIndices,
                 // Public inputs
                 x,
                 externalNullifier,
-                messageLimit,
             }
             await assert.rejects(async () => {
                 await circuit.calculateWitness(inputs, true);
