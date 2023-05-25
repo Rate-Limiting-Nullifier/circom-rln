@@ -39,8 +39,7 @@ template RangeCheck(LIMIT_BIT_SIZE) {
     signal input messageId;
     signal input limit;
 
-    signal output rangeCheck;
-
     signal bitCheck[LIMIT_BIT_SIZE] <== Num2Bits(LIMIT_BIT_SIZE)(messageId);
-    rangeCheck <== LessThan(LIMIT_BIT_SIZE)([messageId, limit]);
+    signal rangeCheck <== LessThan(LIMIT_BIT_SIZE)([messageId, limit]);
+    rangeCheck === 1;
 }

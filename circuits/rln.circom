@@ -27,8 +27,7 @@ template RLN(DEPTH, LIMIT_BIT_SIZE) {
     root <== MerkleTreeInclusionProof(DEPTH)(rateCommitment, identityPathIndex, pathElements);
 
     // messageId range check
-    signal rangeCheck <== RangeCheck(LIMIT_BIT_SIZE)(messageId, userMessageLimit);
-    rangeCheck === 1;
+    RangeCheck(LIMIT_BIT_SIZE)(messageId, userMessageLimit);
 
     // SSS share calculations
     signal a1 <== Poseidon(3)([identitySecret, externalNullifier, messageId]);
