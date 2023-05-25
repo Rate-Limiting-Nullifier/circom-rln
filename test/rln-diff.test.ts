@@ -66,7 +66,7 @@ describe("Test rln-diff.circom", function () {
         assert.equal(outputNullifier, nullifier)
     });
 
-    it("should fail to generate witness if messageId is not in range [1, userMessageLimit]", async function () {
+    it("should fail to generate witness if messageId is not in range [0, userMessageLimit-1]", async function () {
         // Public inputs
         const x = genFieldElement();
         const externalNullifier = genFieldElement();
@@ -75,8 +75,8 @@ describe("Test rln-diff.circom", function () {
         const identitySecretCommitment = poseidon([identitySecret]);
         const merkleProof = genMerkleProof([identitySecretCommitment], 0)
         const userMessageLimit = BigInt(10)
-        // valid message id is in the range [1, userMessageLimit]
-        const invalidMessageIds = [BigInt(0), userMessageLimit + BigInt(1)]
+        // valid message id is in the range [0, userMessageLimit-1]
+        const invalidMessageIds = [userMessageLimit, userMessageLimit + BigInt(1)]
 
         for (const invalidMessageId of invalidMessageIds) {
             const inputs = {
