@@ -9,7 +9,7 @@ template Withdraw() {
     signal output identityCommitment <== Poseidon(1)([identitySecret]);
 
     // Dummy constraint to prevent compiler optimizing it
-    signal addressHashed <== address * address;
+    signal addressSquared <== address * address;
 }
 
 component main { public [address] } = Withdraw();
