@@ -3,13 +3,52 @@
     <img src="https://github.com/Rate-Limiting-Nullifier/rln-circuits-v2/workflows/Test/badge.svg" width="110">
 </p>
 
-<div align="center">
-
-*The project was audited by Veridise, yAcademy fellows and internally.*
-
-</div>
-
 ___
+
+## This is a fork of RLN
+
+This fork of RLN makes use of [RC hash function](https://rc-hash.info) as a drop in replacement to poseidon.
+
+
+### Constraint differences
+
+1. RLN Circuit =>
+
+```diff
+circom compiler 2.1.5
+-template instances: 216
++template instances: 48
+-non-linear constraints: 5820
++non-linear constraints: 957
+linear constraints: 0
+public inputs: 2
+public outputs: 3
+private inputs: 43
+private outputs: 0
+-wires: 5844
++wires: 1053
+-labels: 18553
++labels: 24733
+```
+
+2. Withdraw Circuit =>
+
+```diff
+circom compiler 2.1.5
+-template instances: 71
++template instances: 42
+-non-linear constraints: 214
++non-linear constraints: 37
+linear constraints: 0
+public inputs: 1
+public outputs: 1
+private inputs: 1
+private outputs: 0
+-wires: 217
++wires: 43
+-labels: 585
++labels: 1021
+```
 
 ## What's RLN?
 

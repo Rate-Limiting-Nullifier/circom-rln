@@ -1,6 +1,6 @@
 pragma circom 2.1.0;
 
-include "../node_modules/circomlib/circuits/poseidon.circom";
+include "../lib/rc-impls/rc-circom/circuits/reinforcedConcrete.circom";
 include "../node_modules/circomlib/circuits/mux1.circom";
 include "../node_modules/circomlib/circuits/bitify.circom";
 include "../node_modules/circomlib/circuits/comparators.circom";
@@ -27,7 +27,7 @@ template MerkleTreeInclusionProof(DEPTH) {
             pathIndex[i]
         );
 
-        levelHashes[i + 1] <== Poseidon(2)([mux[i][0], mux[i][1]]);
+        levelHashes[i + 1] <== ReinforcedConcreteHash()([mux[i][0], mux[i][1]]);
     }
 
     root <== levelHashes[DEPTH];
