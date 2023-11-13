@@ -1,7 +1,7 @@
 pragma circom 2.1.0;
 
 include "./utils.circom";
-include "../node_modules/circomlib/circuits/poseidon.circom";
+include "../lib/rc-impls/rc-circom/circuits/reinforcedConcrete.circom";
 
 template RLN(DEPTH, LIMIT_BIT_SIZE) {
     // Private signals
@@ -20,8 +20,8 @@ template RLN(DEPTH, LIMIT_BIT_SIZE) {
     signal output root;
     signal output nullifier;
 
-    signal identityCommitment <== Poseidon(1)([identitySecret]);
-    signal rateCommitment <== Poseidon(2)([identityCommitment, userMessageLimit]);
+    signal identityCommitment <== ReinforcedConcreteHash()([identitySecret, 0]);
+    signal rateCommitment <== ReinforcedConcreteHash()([identityCommitment, userMessageLimit]);
 
     // Membership check
     root <== MerkleTreeInclusionProof(DEPTH)(rateCommitment, identityPathIndex, pathElements);
@@ -30,11 +30,14 @@ template RLN(DEPTH, LIMIT_BIT_SIZE) {
     RangeCheck(LIMIT_BIT_SIZE)(messageId, userMessageLimit);
 
     // SSS share calculations
-    signal a1 <== Poseidon(3)([identitySecret, externalNullifier, messageId]);
+    component rcPermutation = ReinforcedConcretePermutation();
+    signal a1;
+    rcPermutation.state <== [identitySecret, externalNullifier, messageId];
+    a1 <== rcPermutation.hash[0];
     y <== identitySecret + a1 * x;
 
     // nullifier calculation
-    nullifier <== Poseidon(1)([a1]);
+    nullifier <== ReinforcedConcreteHash()([a1, 0]);
 }
 
 component main { public [x, externalNullifier] } = RLN(20, 16);
